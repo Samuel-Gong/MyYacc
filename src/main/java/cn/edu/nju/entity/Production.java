@@ -46,10 +46,10 @@ public class Production {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Production{");
-        sb.append(left);
+        sb.append(left.toString());
         sb.append("------>");
         for (int i = 0; i < right.size(); i++) {
-            sb.append(right.get(i));
+            sb.append(right.get(i).toString());
         }
         sb.append('}');
         return sb.toString();

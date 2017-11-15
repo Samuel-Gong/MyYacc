@@ -42,11 +42,6 @@ public class GOTOGraph {
     private List<Production> productionList;
 
     /**
-     * 零号产生式
-     */
-    private Production zeroProduction;
-
-    /**
      * 所有文法符号
      */
     private List<Sign> allSigns;
@@ -80,16 +75,26 @@ public class GOTOGraph {
 
         itemSets = new ArrayList<>();
 
-        //初始化零号产生式
-        LinkedList<Sign> topRightSign = new LinkedList<>();
-        topRightSign.add(productionList.get(0).getLeft());
-        zeroProduction = new Production(GOTOGraph.START, topRightSign);
+        //增广文法
+        augmentGrammar();
 
-        productionList.add(0, zeroProduction);
-
+        //初始化所有非终结符号及其FIRST集合的映射
         initFirstMap();
 
+        //构造项集
         items();
+    }
+
+    /**
+     * 增广文法
+     */
+    private void augmentGrammar() {
+        //初始化零号产生式
+        LinkedList<Sign> topRightSign = new LinkedList<>();
+        //TODO 需要假设当前文法第一个产生式的左部是文法的开始符号
+        topRightSign.add(productionList.get(0).getLeft());
+        Production zero = new Production(GOTOGraph.START, topRightSign);
+        productionList.add(0, zero);
     }
 
     /**
@@ -98,7 +103,9 @@ public class GOTOGraph {
     private void items() {
         //将C初始化为{closure}({S'->.S,$})
         Set<Item> zeroItemSet = new HashSet<>();
-        zeroItemSet.add(new Item(zeroProduction, 0, GOTOGraph.DOLLAR));
+        Production zeroProduction = productionList.get(0);
+        assert zeroProduction.getLeft().equals(START) : ": 增广文法的零号产生式的左部不为新的开始符号" + START;
+        zeroItemSet.add(new Item(zeroProduction, 0, DOLLAR));
         ItemSet initItemSet = closure(new ItemSet(zeroItemSet));
         itemSets.add(initItemSet);
 

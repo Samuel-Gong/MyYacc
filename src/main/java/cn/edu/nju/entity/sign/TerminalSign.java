@@ -30,4 +30,9 @@ public class TerminalSign extends Sign {
     public String getTerminalSign() {
         return terminalSign;
     }
+
+    @Override
+    public String toString() {
+        return terminalSign;
+    }
 }

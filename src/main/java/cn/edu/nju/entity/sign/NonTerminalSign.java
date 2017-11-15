@@ -30,4 +30,9 @@ public class NonTerminalSign extends Sign {
     public char getNonTerminalSign() {
         return nonTerminalSign;
     }
+
+    @Override
+    public String toString() {
+        return String.valueOf(nonTerminalSign);
+    }
 }

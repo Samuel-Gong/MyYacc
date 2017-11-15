@@ -62,6 +62,7 @@ public class GrammarAnalysisTable {
         this.terminalSigns = gotoGraph.getTerminalSigns();
         this.terminalSigns.add(GOTOGraph.DOLLAR);
 
+        //构造LR语法分析表
         initTables();
     }
 
@@ -69,6 +70,7 @@ public class GrammarAnalysisTable {
      * 初始化ACTION和GOTO表
      */
     private void initTables() {
+
         //初始化ACTION表，每个表项都设为error
         actionTable = new Action[itemSetList.size()][terminalSigns.size()];
         for (int i = 0; i < actionTable.length; i++) {
@@ -86,6 +88,7 @@ public class GrammarAnalysisTable {
             }
         }
 
+        //构造一个LR语法分析表
         fillTheTables();
     }
 
@@ -190,16 +193,22 @@ public class GrammarAnalysisTable {
             for (int j = 0; j < terminalSigns.size(); j++) {
                 row.append("  " + actionTable[i][j]);
             }
-            row.append("****");
+            row.append("  ****");
             for (int j = 0; j < nonTerminalSigns.size(); j++) {
                 row.append("  " + gotoTable[i][j]);
             }
-            row.append("*****");
+            row.append("  *****");
             System.out.println(row.toString());
         }
         System.out.println("************************************************************");
     }
 
+    /**
+     * 通过下标获取增广文法产生式列表中的产生式
+     *
+     * @param index 下标
+     * @return 产生式
+     */
     public Production getProduction(int index) {
         return productions.get(index);
     }
