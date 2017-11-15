@@ -10,6 +10,7 @@ import cn.edu.nju.gotoGraph.GOTOGraph;
 
 import java.io.*;
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * Yacc文件的解析器，将结合性、优先级、产生式的信息
@@ -158,5 +159,16 @@ public class YaccFileParser {
         char c = sign.charAt(0);
         assert c != 'Z' : ": 非终结符不能为Z，Z已经被定义为增广文法中0号产生式的左部";
         return Character.isUpperCase(c);
+    }
+
+    /**
+     * 判断是否是终结符
+     *
+     * @param sign
+     * @return
+     */
+    public boolean isTerminalSign(String sign) {
+        String pattern = "([a-z])*|[+\\-*/%]|[,.()\\[\\]{}]|[0-9]";
+        return Pattern.matches(pattern, sign);
     }
 }

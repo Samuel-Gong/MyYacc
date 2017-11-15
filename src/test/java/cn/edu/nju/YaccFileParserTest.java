@@ -34,4 +34,26 @@ public class YaccFileParserTest {
         Assert.assertEquals(SignType.TERMINAL, fifthProduction.getRight().getFirst().getSignType());
     }
 
+    @Test
+    public void isTerminalSign() throws Exception {
+        YaccFileParser yaccFileParser = new YaccFileParser();
+        Assert.assertEquals(true, yaccFileParser.isTerminalSign("a"));
+        Assert.assertEquals(true, yaccFileParser.isTerminalSign("z"));
+        Assert.assertEquals(true, yaccFileParser.isTerminalSign("if"));
+        Assert.assertEquals(true, yaccFileParser.isTerminalSign("else"));
+        Assert.assertEquals(true, yaccFileParser.isTerminalSign("+"));
+        Assert.assertEquals(true, yaccFileParser.isTerminalSign("-"));
+        Assert.assertEquals(true, yaccFileParser.isTerminalSign("*"));
+        Assert.assertEquals(true, yaccFileParser.isTerminalSign("/"));
+        Assert.assertEquals(true, yaccFileParser.isTerminalSign("%"));
+        Assert.assertEquals(true, yaccFileParser.isTerminalSign(","));
+        Assert.assertEquals(true, yaccFileParser.isTerminalSign("."));
+        Assert.assertEquals(true, yaccFileParser.isTerminalSign("("));
+        Assert.assertEquals(true, yaccFileParser.isTerminalSign("["));
+        Assert.assertEquals(true, yaccFileParser.isTerminalSign("0"));
+        Assert.assertEquals(true, yaccFileParser.isTerminalSign("9"));
+        Assert.assertEquals(false, yaccFileParser.isTerminalSign("A"));
+        Assert.assertEquals(false, yaccFileParser.isTerminalSign("Z"));
+    }
+
 }

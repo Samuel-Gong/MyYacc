@@ -65,9 +65,7 @@ public class SrcFileReader {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         return signsSequence;
-
     }
 
     /**
