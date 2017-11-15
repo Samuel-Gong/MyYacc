@@ -1,4 +1,5 @@
 
 
-S : if S else S
-    | if S
+S : i S e S
+    | i S
+    | a

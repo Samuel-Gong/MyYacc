@@ -17,7 +17,7 @@ public class GrammarAnalysisTableTest {
     public void setUp() throws Exception {
         //Yacc文件解析器
         YaccFileParser yaccFileParser = new YaccFileParser();
-        file = new File(Thread.currentThread().getContextClassLoader().getResource("yaccFile/firstTest.y").getPath());
+        file = new File(Thread.currentThread().getContextClassLoader().getResource("yaccFile/if_else.y").getPath());
         YaccFileInfo yaccFileInfo = yaccFileParser.getYaccFileInfo(file);
 
         //GOTO图的构建

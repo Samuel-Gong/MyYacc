@@ -98,8 +98,10 @@ public class GrammarAnalysisTable {
     private void fillTheTables() {
         for (int i = 0; i < itemSetList.size(); i++) {
             ItemSet itemSet = itemSetList.get(i);
+
             //ACTION表和GOTO表中对应的行
             int row = i;
+
             //对每一条项集连接的边
             for (Map.Entry<Sign, ItemSet> entry : itemSet.getGotoMap().entrySet()) {
                 Sign sign = entry.getKey();
@@ -115,8 +117,8 @@ public class GrammarAnalysisTable {
                 //GOTO(Ii, A) = Ij, A为非终结符号, 动作为GOTO
                 else {
                     int column = nonTerminalSigns.indexOf(sign);
-                    assert actionTable[row][column] instanceof ErrorAction
-                            : "Action表状态:" + row + "对输入: " + ((NonTerminalSign) sign).getNonTerminalSign() + "产生冲突";
+                    assert gotoTable[row][column] == -1
+                            : "Goto表（" + row + "," + nonTerminalSigns.indexOf(sign) + ") 不为-1";
 
                     int gotoState = itemSetList.indexOf(entry.getValue());
                     gotoTable[row][column] = gotoState;
@@ -130,16 +132,31 @@ public class GrammarAnalysisTable {
                 for (Item item : itemsCanReduce) {
                     int column = terminalSigns.indexOf(item.getPredictiveSign());
 
-                    assert actionTable[row][column] instanceof ErrorAction
+                    assert actionTable[row][column].getActionType() == ActionType.ERROR
+                            || actionTable[row][column].getActionType() == ActionType.REDUCE
+                            || actionTable[row][column].getActionType() == ActionType.SHIFT
                             : "Action表状态:" + row + "对向前看符号: " + item.getPredictiveSign().getTerminalSign() + "规约产生冲突";
                     //判断是否是接受状态
                     if (item.isAccept()) {
+                        assert actionTable[row][column].getActionType() == ActionType.ERROR : ": ACTION表中接受状态不为ERROR";
                         assert productions.indexOf(item.getProduction()) == 0 : "接受状态对应的产生式不是0号产生式";
                         actionTable[row][column] = new AcceptAction(item.getProduction());
                     }
                     //不是接受状态，就用规约动作
                     else {
-                        actionTable[row][column] = new ReduceAction(productions.indexOf(item.getProduction()));
+
+                        int newReduceIndex = productions.indexOf(item.getProduction());
+
+                        //TODO 解决一个移入／归约冲突时，总是选择移入
+                        if (!(actionTable[row][column].getActionType() == ActionType.SHIFT)) {
+                            //TODO 解决一个归约／归约冲突时，选择在Yacc规约中列在前面的那个冲突产生式
+                            if (actionTable[row][column].getActionType() == ActionType.REDUCE) {
+                                int indexInTable = productions.indexOf(((ReduceAction) actionTable[row][column]).getReduceProduction());
+                                if (newReduceIndex < indexInTable) {
+                                    actionTable[row][column] = new ReduceAction(newReduceIndex);
+                                }
+                            } else actionTable[row][column] = new ReduceAction(newReduceIndex);
+                        }
                     }
                 }
             }
