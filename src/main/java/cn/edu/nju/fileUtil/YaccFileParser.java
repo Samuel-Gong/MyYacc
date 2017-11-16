@@ -1,4 +1,4 @@
-package cn.edu.nju;
+package cn.edu.nju.fileUtil;
 
 import cn.edu.nju.entity.Production;
 import cn.edu.nju.entity.YaccFileInfo;
@@ -85,8 +85,15 @@ public class YaccFileParser {
                     NonTerminalSign leftSign = new NonTerminalSign(left.charAt(0));
 
                     String right = line.substring(index + 1).trim();
-                    //添加新的产生式
-                    productions.add(new Production(leftSign, parseRight(right)));
+                    //右部为epsilon
+                    if (right.length() == 0) {
+                        LinkedList<Sign> rightSequence = new LinkedList<>();
+                        rightSequence.add(GOTOGraph.EPSILON);
+                        productions.add(new Production(lastNonTerminalSign, rightSequence));
+                    } else {
+                        //添加新的产生式
+                        productions.add(new Production(leftSign, parseRight(right)));
+                    }
 
                     //更新上一个非终结符
                     lastNonTerminalSign = leftSign;

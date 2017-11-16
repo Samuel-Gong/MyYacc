@@ -1,7 +1,7 @@
 package cn.edu.nju.analysisTable;
 
-import cn.edu.nju.YaccFileParser;
 import cn.edu.nju.entity.YaccFileInfo;
+import cn.edu.nju.fileUtil.YaccFileParser;
 import cn.edu.nju.gotoGraph.GOTOGraph;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,7 +29,7 @@ public class GrammarAnalysisTableTest {
     @Test
     public void printTable() throws Exception {
 
-        grammarAnalysisTable.printTable();
+        System.out.println(grammarAnalysisTable.toString());
 
     }
 

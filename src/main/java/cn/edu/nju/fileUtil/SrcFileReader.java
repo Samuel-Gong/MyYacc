@@ -1,10 +1,10 @@
-package cn.edu.nju;
+package cn.edu.nju.fileUtil;
 
 import cn.edu.nju.entity.sign.TerminalSign;
 
 import java.io.*;
-import java.util.ArrayDeque;
-import java.util.Queue;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -12,7 +12,7 @@ import java.util.Scanner;
  */
 public class SrcFileReader {
 
-    public Queue<TerminalSign> readSrcFile() {
+    public List<TerminalSign> readSrcFile() {
         Scanner scanner = new Scanner(System.in);
         //读入文件内容
         System.out.println("请输入你想解析的文件名（相对路径）:");
@@ -27,7 +27,7 @@ public class SrcFileReader {
         return getSignSequence(srcFile);
     }
 
-    public Queue<TerminalSign> getSignSequence(File srcFile) {
+    public List<TerminalSign> getSignSequence(File srcFile) {
 
         BufferedReader br = null;
         try {
@@ -36,7 +36,7 @@ public class SrcFileReader {
             e.printStackTrace();
         }
 
-        Queue<TerminalSign> signsSequence = new ArrayDeque<>();
+        List<TerminalSign> signsSequence = new ArrayList<>();
 
         String line = "";
 

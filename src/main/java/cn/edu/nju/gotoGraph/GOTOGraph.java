@@ -17,29 +17,14 @@ import java.util.*;
 public class GOTOGraph {
 
     /**
-     * 定义Z为保留的0号产生式的右部
-     */
-    public static NonTerminalSign START = new NonTerminalSign('Z');
-
-    /**
-     * 定义的零号产生式的向前看符号
-     */
-    public static TerminalSign DOLLAR = new TerminalSign("$");
-
-    /**
-     * 定义的epsilon终结符
-     */
-    public static TerminalSign EPSILON = new TerminalSign("\0");
-
-    /**
      * 项集序列
      */
     private List<ItemSet> itemSets;
 
     /**
-     * 所有产生式
+     * 定义Z为保留的0号产生式的左部
      */
-    private List<Production> productionList;
+    public static NonTerminalSign START = new NonTerminalSign('Z');
 
     /**
      * 所有文法符号
@@ -60,10 +45,23 @@ public class GOTOGraph {
      * 非终结符及其FIRST的集合
      */
     private Map<NonTerminalSign, Set<TerminalSign>> firstMap;
+    /**
+     * 定义的零号产生式的向前看符号
+     */
+    public static TerminalSign DOLLAR = new TerminalSign("$");
+    /**
+     * 定义的epsilon终结符
+     */
+    public static TerminalSign EPSILON = new TerminalSign("\0");
+    /**
+     * 增广文法的产生式
+     */
+    private List<Production> augmentProductions;
 
     public GOTOGraph(YaccFileInfo yaccFileInfo) {
         //初始化yacc文件的信息，产生式，非终结符集合，终结符集合
-        productionList = yaccFileInfo.productions;
+        augmentProductions = new ArrayList<>();
+        augmentProductions.addAll(yaccFileInfo.productions);
         terminalSigns = new ArrayList<>();
         terminalSigns.addAll(yaccFileInfo.terminalSigns);
         nonTerminalSigns = new ArrayList<>();
@@ -92,9 +90,9 @@ public class GOTOGraph {
         //初始化零号产生式
         LinkedList<Sign> topRightSign = new LinkedList<>();
         //TODO 需要假设当前文法第一个产生式的左部是文法的开始符号
-        topRightSign.add(productionList.get(0).getLeft());
+        topRightSign.add(augmentProductions.get(0).getLeft());
         Production zero = new Production(GOTOGraph.START, topRightSign);
-        productionList.add(0, zero);
+        augmentProductions.add(0, zero);
     }
 
     /**
@@ -103,7 +101,7 @@ public class GOTOGraph {
     private void items() {
         //将C初始化为{closure}({S'->.S,$})
         Set<Item> zeroItemSet = new HashSet<>();
-        Production zeroProduction = productionList.get(0);
+        Production zeroProduction = augmentProductions.get(0);
         assert zeroProduction.getLeft().equals(START) : ": 增广文法的零号产生式的左部不为新的开始符号" + START;
         zeroItemSet.add(new Item(zeroProduction, 0, DOLLAR));
         ItemSet initItemSet = closure(new ItemSet(zeroItemSet));
@@ -173,7 +171,7 @@ public class GOTOGraph {
                     NonTerminalSign nonTerminal = item.getNonTerminalAfterDot();
                     //added数组中下标为left的为false，说明该非终结符的非内核项还为加入项集
                     //G'中的每个产生式B->𝛾
-                    for (Production production : productionList) {
+                    for (Production production : augmentProductions) {
                         if (production.getLeft().equals(nonTerminal)) {
                             //FIRST(βa)中的每个终结符号b
                             for (TerminalSign b : firstSet) {
@@ -236,7 +234,9 @@ public class GOTOGraph {
         //如果X是一个终结符号，那么FIRST(X) = X
         if (sign.getSignType() == SignType.TERMINAL) {
             firsts.add((TerminalSign) sign);
-        } else {
+        }
+        //否则在firstMap中找该非终结符号集合的FIRST集合
+        else {
             return firstMap.get(sign);
         }
         return firsts;
@@ -255,7 +255,7 @@ public class GOTOGraph {
         for (int i = 0; i < nonTerminalSigns.size(); i++) {
             Set<TerminalSign> terminalSigns = new HashSet<>();
             NonTerminalSign nonTerminalSign = nonTerminalSigns.get(i);
-            for (Production production : productionList) {
+            for (Production production : augmentProductions) {
                 if (production.getLeft().equals(nonTerminalSign)) {
                     LinkedList<Sign> right = production.getRight();
                     //如果右部的第一位是终结符，则先加入first的终结符集合
@@ -279,7 +279,7 @@ public class GOTOGraph {
                 Set<TerminalSign> terminalSigns = new HashSet<>();
                 NonTerminalSign nonTerminalSign = nonTerminalSigns.get(i);
 
-                for (Production production : productionList) {
+                for (Production production : augmentProductions) {
                     //左部为该终结符的表达式
                     if (production.getLeft().equals(nonTerminalSign)) {
                         LinkedList<Sign> right = production.getRight();
@@ -357,8 +357,8 @@ public class GOTOGraph {
         return itemSets;
     }
 
-    public List<Production> getProductionList() {
-        return productionList;
+    public List<Production> getAugmentProductions() {
+        return augmentProductions;
     }
 
     public List<TerminalSign> getTerminalSigns() {

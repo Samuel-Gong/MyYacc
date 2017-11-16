@@ -33,6 +33,7 @@ public class TerminalSign extends Sign {
 
     @Override
     public String toString() {
+        if (terminalSign.equals("\0")) return "ℇ";
         return terminalSign;
     }
 }

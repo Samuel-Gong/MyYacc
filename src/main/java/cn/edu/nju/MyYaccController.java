@@ -1,12 +1,15 @@
 package cn.edu.nju;
 
 import cn.edu.nju.analysisTable.GrammarAnalysisTable;
+import cn.edu.nju.entity.ReductionInfo;
 import cn.edu.nju.entity.YaccFileInfo;
 import cn.edu.nju.entity.sign.TerminalSign;
+import cn.edu.nju.fileUtil.ReductionsWriter;
+import cn.edu.nju.fileUtil.SrcFileReader;
+import cn.edu.nju.fileUtil.YaccFileParser;
 import cn.edu.nju.gotoGraph.GOTOGraph;
 
 import java.util.List;
-import java.util.Queue;
 
 /**
  * 将所有功能集合起来：
@@ -32,17 +35,16 @@ public class MyYaccController {
 
         //源文件读取
         SrcFileReader srcFileReader = new SrcFileReader();
-        Queue<TerminalSign> signs = srcFileReader.readSrcFile();
+        List<TerminalSign> signs = srcFileReader.readSrcFile();
 
         //语法分析器
         LRGrammarParser lrGrammarParser = new LRGrammarParser(grammarAnalysisTable);
-        List<String> reduceProcedure = lrGrammarParser.parseGrammar(signs);
+        ReductionInfo reductionInfo = lrGrammarParser.parseGrammar(signs);
 
-        System.out.println("**********************规约产生式************************");
-        for (int i = 0; i < reduceProcedure.size(); i++) {
-            System.out.println(reduceProcedure.get(i));
-        }
+
+        reductionInfo.productions = yaccFileInfo.productions;
+        reductionInfo.inputSigns = signs;
+        ReductionsWriter reductionsWriter = new ReductionsWriter();
+        reductionsWriter.writeReductionInfo(reductionInfo);
     }
-
-
 }

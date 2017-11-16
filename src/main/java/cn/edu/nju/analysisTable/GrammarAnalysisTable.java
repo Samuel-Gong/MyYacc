@@ -56,7 +56,7 @@ public class GrammarAnalysisTable {
     public GrammarAnalysisTable(GOTOGraph gotoGraph) {
         this.itemSetList = gotoGraph.getItemSets();
         this.nonTerminalSigns = gotoGraph.getNonTerminalSigns();
-        this.productions = gotoGraph.getProductionList();
+        this.productions = gotoGraph.getAugmentProductions();
 
         //添加DOLLAR符号到Action的表的表头中
         this.terminalSigns = gotoGraph.getTerminalSigns();
@@ -171,6 +171,7 @@ public class GrammarAnalysisTable {
      * @return ACTION表中对应的ACTION
      */
     public Action findAction(int curState, TerminalSign curSign) {
+        assert terminalSigns.contains(curSign) : curSign.getTerminalSign() + "不在文法的终结符集中,该输入不在文法中";
         return actionTable[curState][terminalSigns.indexOf(curSign)];
     }
 
@@ -188,10 +189,12 @@ public class GrammarAnalysisTable {
     /**
      * 打印LR语法分析表
      */
-    public void printTable() {
+    public String toString() {
 
-        System.out.println("************************************************************");
-        System.out.println("STATE*****         ACTION         ****       GOTO      *****");
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("************************************************************\n");
+        sb.append("STATE*****         ACTION         ****       GOTO      *****\n");
         StringBuilder terminals = new StringBuilder();
         for (int i = 0; i < terminalSigns.size(); i++) {
             terminals.append("  " + terminalSigns.get(i).getTerminalSign() + "  ");
@@ -200,8 +203,8 @@ public class GrammarAnalysisTable {
         for (int i = 0; i < nonTerminalSigns.size(); i++) {
             nonTerminals.append("  " + nonTerminalSigns.get(i).getNonTerminalSign() + "  ");
         }
-        System.out.println("**********" + terminals.toString() + "****" + nonTerminals +
-                "*****");
+        sb.append("**********" + terminals.toString() + "****" + nonTerminals +
+                "*****\n");
 
         for (int i = 0; i < itemSetList.size(); i++) {
             StringBuilder row = new StringBuilder();
@@ -215,9 +218,10 @@ public class GrammarAnalysisTable {
                 row.append("  " + gotoTable[i][j]);
             }
             row.append("  *****");
-            System.out.println(row.toString());
+            sb.append(row.toString() + "\n");
         }
-        System.out.println("************************************************************");
+        sb.append("************************************************************\n");
+        return sb.toString();
     }
 
     /**
